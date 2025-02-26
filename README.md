@@ -2,21 +2,53 @@
 
 ### Arquitecturas de Software
 
-
-
 #### API REST para la gestión de planos.
 
-En este ejercicio se va a construír el componente BlueprintsRESTAPI, el cual permita gestionar los planos arquitectónicos de una prestigiosa compañia de diseño. La idea de este API es ofrecer un medio estandarizado e 'independiente de la plataforma' para que las herramientas que se desarrollen a futuro para la compañía puedan gestionar los planos de forma centralizada.
-El siguiente, es el diagrama de componentes que corresponde a las decisiones arquitectónicas planteadas al inicio del proyecto:
+Este programa es una API REST en Java con Spring Boot que permite la gestión de planos. Los usuarios pueden crear, consultar, modificar y listar planos, los cuales son almacenados en una capa de persistencia basada en memoria. La API sigue un enfoque modular con separación de responsabilidades en controladores, servicios y persistencia, facilitando futuras mejoras como la integración con bases de datos o la optimización del rendimiento.
 
-Donde se definió que:
+### Funcionalidades Principales
 
-* El componente BlueprintsRESTAPI debe resolver los servicios de su interfaz a través de un componente de servicios, el cual -a su vez- estará asociado con un componente que provea el esquema de persistencia. Es decir, se quiere un bajo acoplamiento entre el API, la implementación de los servicios, y el esquema de persistencia usado por los mismos.
+1. Obtener todos los planos → GET /blueprints
+* Devuelve una lista de todos los planos registrados en el sistema.
+2. Obtener un plano específico → GET /blueprints/{author}/{name}
+* Busca un plano por su autor y nombre.
+* Responde con 404 Not Found si no existe.
+3. Obtener todos los planos de un autor → GET /blueprints/{author}
+* Retorna todos los planos de un autor específico.
+4. Registrar un nuevo plano → POST /blueprints
+* Recibe un JSON con los detalles del plano y lo guarda en la base de datos.
+* Si el plano ya existe, responde con 409 Conflict.
+5. Actualizar un plano existente → PUT /blueprints/{author}/{name} (Pendiente de implementación)
+* Permitirá modificar un plano previamente registrado.
 
-Del anterior diagrama de componentes (de alto nivel), se desprendió el siguiente diseño detallado, cuando se decidió que el API estará implementado usando el esquema de inyección de dependencias de Spring (el cual requiere aplicar el principio de Inversión de Dependencias), la extensión SpringMVC para definir los servicios REST, y SpringBoot para la configurar la aplicación:
+### Estructura del código
 
+1️. Controlador: BlueprintAPIController
 
-![](img/ClassDiagram.png)
+Define los endpoints de la API y maneja las solicitudes HTTP.
+Usa BlueprintsServices para procesar los datos.
+Maneja errores y responde con códigos HTTP adecuados.
+
+2️. Servicio: BlueprintsServices
+
+Implementa la lógica de negocio.
+Valida datos y realiza operaciones sobre la capa de persistencia.
+
+3️. Persistencia: BlueprintsPersistence (Interfaz)
+
+Define los métodos de almacenamiento y recuperación de planos.
+Permite desacoplar la implementación específica de la persistencia.
+
+4️. Implementación en Memoria: InMemoryBlueprintPersistence
+
+Usa un HashMap para almacenar planos en memoria.
+Contiene datos de prueba predefinidos para simular una base de datos.
+Implementa la interfaz BlueprintsPersistence.
+
+5️. Modelo de Datos: Blueprint y Point
+
+Blueprint representa un plano con un autor, nombre y una lista de puntos.
+Point representa una coordenada (x, y) dentro de un plano.
 
 ### Parte I
 
