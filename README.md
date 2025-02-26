@@ -1,12 +1,12 @@
-### Escuela Colombiana de Ingeniería
+# Escuela Colombiana de Ingeniería
 
 ### Arquitecturas de Software
 
-#### API REST para la gestión de planos.
+## API REST para la gestión de planos.
 
 Este programa es una API REST en Java con Spring Boot que permite la gestión de planos. Los usuarios pueden crear, consultar, modificar y listar planos, los cuales son almacenados en una capa de persistencia basada en memoria. La API sigue un enfoque modular con separación de responsabilidades en controladores, servicios y persistencia, facilitando futuras mejoras como la integración con bases de datos o la optimización del rendimiento.
 
-### Funcionalidades Principales
+## Funcionalidades Principales
 
 1. Obtener todos los planos → GET /blueprints
 * Devuelve una lista de todos los planos registrados en el sistema.
@@ -21,7 +21,7 @@ Este programa es una API REST en Java con Spring Boot que permite la gestión de
 5. Actualizar un plano existente → PUT /blueprints/{author}/{name} (Pendiente de implementación)
 * Permitirá modificar un plano previamente registrado.
 
-### Estructura del código
+## Estructura del código
 
 1️. Controlador: BlueprintAPIController
 
@@ -50,7 +50,7 @@ Implementa la interfaz BlueprintsPersistence.
 Blueprint representa un plano con un autor, nombre y una lista de puntos.
 Point representa una coordenada (x, y) dentro de un plano.
 
-### Ejecución
+## Ejecución
 ```
 git clone https://github.com/Pau993/TallerARSW05.git
 cd TallerARSW05
@@ -59,7 +59,7 @@ mvn clean compile
 mvn spring-boot:run
 ```
 
-### Parte I
+# Parte I
 
 1. Integre al proyecto base suministrado los Beans desarrollados en el ejercicio anterior. Sólo copie las clases, NO los archivos de configuración. Rectifique que se tenga correctamente configurado el esquema de inyección de dependencias con las anotaciones @Service y @Autowired.
 
@@ -126,7 +126,7 @@ Clases utilizadas.
 
 ![image](https://github.com/user-attachments/assets/e362dd7a-b9e5-4f9b-ae2e-b5a5ec6221b1)
 
-### Parte II
+# Parte II
 
 1.  Agregue el manejo de peticiones POST (creación de nuevos planos), de manera que un cliente http pueda registrar una nueva orden haciendo una petición POST al recurso ‘planos’, y enviando como contenido de la petición todo el detalle de dicho recurso a través de un documento jSON. Para esto, tenga en cuenta el siguiente ejemplo, que considera -por consistencia con el protocolo HTTP- el manejo de códigos de estados HTTP (en caso de éxito o error):
 
