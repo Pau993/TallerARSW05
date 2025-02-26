@@ -50,6 +50,15 @@ Implementa la interfaz BlueprintsPersistence.
 Blueprint representa un plano con un autor, nombre y una lista de puntos.
 Point representa una coordenada (x, y) dentro de un plano.
 
+### Ejecución
+```
+git clone https://github.com/Pau993/TallerARSW05.git
+cd TallerARSW05
+git checkout main
+mvn clean compile
+mvn spring-boot:run
+```
+
 ### Parte I
 
 1. Integre al proyecto base suministrado los Beans desarrollados en el ejercicio anterior. Sólo copie las clases, NO los archivos de configuración. Rectifique que se tenga correctamente configurado el esquema de inyección de dependencias con las anotaciones @Service y @Autowired.
@@ -194,3 +203,6 @@ Escriba su análisis y la solución aplicada en el archivo ANALISIS_CONCURRENCIA
 	* En el código, y en las respuestas del archivo de texto, se tuvo en cuenta:
 		* La colección usada en InMemoryBlueprintPersistence no es Thread-safe (se debió cambiar a una con esta condición).
 		* El método que agrega un nuevo plano está sujeta a una condición de carrera, pues la consulta y posterior agregación (condicionada a la anterior) no se realizan de forma atómica. Si como solución usa un bloque sincronizado, se evalúa como R. Si como solución se usaron los métodos de agregación condicional atómicos (por ejemplo putIfAbsent()) de la colección 'Thread-Safe' usada, se evalúa como B.
+
+## Autores ✒️
+**Paula Natalia Paez Vega* **Manuel Felipe Barrera Barrera* - *Initial work* - [Paulinguis993](https://github.com/Paulinguis993)
