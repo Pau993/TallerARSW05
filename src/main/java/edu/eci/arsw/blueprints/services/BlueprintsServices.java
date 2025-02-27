@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.concurrent.ConcurrentHashMap;
 import edu.eci.arsw.blueprints.filters.BlueprintFilter;
 import edu.eci.arsw.blueprints.model.Blueprint;
 import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
@@ -29,6 +29,8 @@ public class BlueprintsServices {
     @Autowired
     public BlueprintFilter filter;
 
+    private final ConcurrentHashMap<String, Object> locks = new ConcurrentHashMap<>();
+
     /**
      * Adds a new blueprint to the persistence layer.
      *
@@ -37,8 +39,13 @@ public class BlueprintsServices {
      * already exists
      */
     public void addNewBlueprint(Blueprint bp) throws BlueprintPersistenceException {
-        System.out.println("📝 Agregando blueprint: " + bp.getAuthor() + " - " + bp.getName());
-        bpp.saveBlueprint(bp);
+        String author = bp.getAuthor();
+        locks.putIfAbsent(author, new Object());
+
+        synchronized (locks.get(author)) {
+            System.out.println("📝 Agregando blueprint: " + author + " - " + bp.getName());
+            bpp.saveBlueprint(bp);
+        }
     }
     
 
@@ -64,10 +71,14 @@ public class BlueprintsServices {
      * @throws BlueprintNotFoundException if there is no such blueprint
      */
     public Blueprint getBlueprint(String author, String name) throws BlueprintNotFoundException {
-        Blueprint bp = bpp.getBlueprint(author, name);
-        // return filter.filter(bp); // ❌ COMENTADO
-        return bp; // ✅ Devuelve el blueprint sin filtrar temporalmente
+        locks.putIfAbsent(author, new Object());
+    
+        synchronized (locks.get(author)) {
+            Blueprint bp = bpp.getBlueprint(author, name);
+            return bp; // ✅ Devuelve el blueprint sin filtrar temporalmente
+        }
     }
+    
     
 
     /**
@@ -84,8 +95,12 @@ public class BlueprintsServices {
     }
 
     public void updateBlueprint(String author, String bpname, Blueprint updatedBlueprint) throws BlueprintNotFoundException {
-        Blueprint existingBlueprint = getBlueprint(author, bpname);
-        existingBlueprint.setPoints(updatedBlueprint.getPoints());
+        locks.putIfAbsent(author, new Object());
+
+        synchronized (locks.get(author)) {
+            Blueprint existingBlueprint = getBlueprint(author, bpname);
+            existingBlueprint.setPoints(updatedBlueprint.getPoints());
+        }
     }
     
 
