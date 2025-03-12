@@ -21,7 +21,7 @@ import edu.eci.arsw.blueprints.services.BlueprintsServices;
 @RequestMapping("/blueprints")
 public class BlueprintAPIController {
 
-    private BlueprintsServices blueprintsServices;
+    private final BlueprintsServices blueprintsServices;
 
     public BlueprintAPIController(BlueprintsServices blueprintsServices) {
         this.blueprintsServices = blueprintsServices;
@@ -34,7 +34,7 @@ public class BlueprintAPIController {
             return blueprints.isEmpty()
                     ? new ResponseEntity<>("No blueprints available", HttpStatus.NOT_FOUND)
                     : new ResponseEntity<>(blueprints, HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (BlueprintPersistenceException e) {
             return new ResponseEntity<>("Error retrieving blueprints", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
