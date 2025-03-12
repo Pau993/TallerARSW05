@@ -1,3 +1,5 @@
+//Paula Natalia Paez Vega
+//Manuel Felipe Barrera
 var APIClient = (function() {
     const baseUrl = "http://localhost:8080/api/blueprints";
 
