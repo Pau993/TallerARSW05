@@ -1,0 +1,79 @@
+BlueprintsServices: Solución a Condiciones de Carrera
+
+🔍 Condiciones de carrera identificadas
+En la clase `BlueprintsServices`, se detectaron posibles condiciones de carrera en los siguientes métodos:
+
+1. addNewBlueprint(Blueprint bp)
+   - Si múltiples hilos intentaban agregar blueprints del mismo autor simultáneamente, podrían producirse escrituras concurrentes inconsistentes en la persistencia (`bpp`).
+
+2. getBlueprint(String author, String name)
+   - Si un hilo lee un blueprint mientras otro lo está modificando, se podría obtener una lectura inconsistente.
+
+3. updateBlueprint(String author, String bpname, Blueprint updatedBlueprint)
+   - Si múltiples hilos actualizan el mismo blueprint al mismo tiempo, podrían sobreescribirse cambios sin sincronización.
+
+🚨 Regiones críticas
+Las regiones críticas se encuentran en las operaciones que modifican o leen datos de la persistencia:
+
+- bpp.saveBlueprint(bp) dentro de addNewBlueprint.
+- bpp.getBlueprint(author, name) dentro de getBlueprint.
+- existingBlueprint.setPoints(updatedBlueprint.getPoints()) dentro de updateBlueprint.
+
+Para evitar estas condiciones de carrera, se han agregado bloqueos por autor utilizando un ConcurrentHashMap<String, Object>.
+
+✅ Código corregido
+
+    private final ConcurrentHashMap<String, Object> locks = new ConcurrentHashMap<>();
+
+    /**
+     * Adds a new blueprint to the persistence layer in a thread-safe manner.
+     * @param bp the blueprint to add
+     * @throws BlueprintPersistenceException if a blueprint with the same name already exists
+     */
+    public void addNewBlueprint(Blueprint bp) throws BlueprintPersistenceException {
+        String author = bp.getAuthor();
+        locks.putIfAbsent(author, new Object());
+
+        synchronized (locks.get(author)) {
+            System.out.println("📝 Agregando blueprint: " + author + " - " + bp.getName());
+            bpp.saveBlueprint(bp);
+        }
+    }
+
+    /**
+     * Retrieves a specific blueprint by author and name in a thread-safe manner.
+     * @param author blueprint's author
+     * @param name blueprint's name
+     * @return the blueprint of the given name created by the given author
+     * @throws BlueprintNotFoundException if there is no such blueprint
+     */
+    public Blueprint getBlueprint(String author, String name) throws BlueprintNotFoundException {
+        locks.putIfAbsent(author, new Object());
+        synchronized (locks.get(author)) {
+            return bpp.getBlueprint(author, name);
+        }
+    }
+
+
+    /**
+     * Updates an existing blueprint in a thread-safe manner.
+     * @param author blueprint's author
+     * @param bpname blueprint's name
+     * @param updatedBlueprint the new blueprint data
+     * @throws BlueprintNotFoundException if the blueprint does not exist
+     */
+    public void updateBlueprint(String author, String bpname, Blueprint updatedBlueprint) throws BlueprintNotFoundException {
+        locks.putIfAbsent(author, new Object());
+
+        synchronized (locks.get(author)) {
+            Blueprint existingBlueprint = getBlueprint(author, bpname);
+            existingBlueprint.setPoints(updatedBlueprint.getPoints());
+        }
+    }
+}
+
+📌 **Resumen de las mejoras**
+- Se agregaron **bloqueos por autor** usando `ConcurrentHashMap<String, Object>`.
+- Se usó `synchronized` para evitar modificaciones concurrentes en `addNewBlueprint`, `getBlueprint` y `updateBlueprint`.
+- Se aseguraron operaciones de lectura/escritura seguras sin afectar el rendimiento general.
+- Se eliminó la aplicación del filtro en `getAllBlueprints()` para evitar posibles problemas de concurrencia al modificar `BlueprintsPersistence`.
